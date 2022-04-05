@@ -1,0 +1,85 @@
+name: Run http unit tests
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    env:
+      working-directory: WebserviceTest/webservice-nunit/
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0' # SDK Version to use; x will use the latest version of the 3.1 channel
+    - name: ls
+      run: ls
+      working-directory: WebserviceTest/webservice-nunit/
+    - name: Run http test
+      run: dotnet test --logger "trx;LogFileName=clienttests.xml"
+      working-directory: WebserviceTest/webservice-nunit/
+    - name: find
+      run: find .
+      working-directory: WebserviceTest/webservice-nunit/
+    - uses: MirageNet/nunit-reporter@v1.1.0
+      if: always()
+      with:
+        # path: TestResults/Tests/*.trx
+        path: TestResults/clienttests.xml
+        access-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: use this action, test solution dir
+      uses: zyborg/dotnet-tests-report@v1
+      with:
+        project_path: TestResults/
+        report_name: my_project_tests
+        report_title: My Project Tests
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+# test:
+#   runs-on: ubuntu-18.04
+#   name: Generate Test Reports
+#   steps:
+#     - name: XUnit Viewer
+#       id: xunit-viewer
+#       uses: AutoModality/action-xunit-viewer@v1
+#     - name: Attach the report
+#       uses: actions/upload-artifact@v1
+#       with:
+#         name: ${{ steps.xunit-viewer.outputs.report-name }}
+#         path: ${{ steps.xunit-viewer.outputs.report-dir }}
+
+# name: Test
+# on: push
+# jobs:
+#   test:
+#     runs-on: ubuntu-18.04
+#     name: Generate Test Reports
+#     env:
+#       RESULTS_PATH: alternate-location
+#     steps:
+#       - name: Generate Report
+#         id: xunit-viewer
+#         uses: AutoModality/action-xunit-viewer@v1
+#         with:
+#           results: ${{ env.RESULTS_PATH }}
+#       - name: The generated report
+#         run: echo "The report is ${{ steps.xunit-viewer.outputs.report-file }}"
+#       - name: Attach the report
+#         uses: actions/upload-artifact@v1
+#         with:
+#           name: alternate-results-path-reports
+#           path: ${{ env.RESULTS_PATH }}
