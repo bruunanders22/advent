@@ -1,26 +1,27 @@
 
-public class AddOp
-{
-    public eval(double x, double y)
-    {
-        return x+y;
-    }
-}
 
-public class AddParams
+public class BinaryParams
 {
     public double X { get; set; }
 
     public double Y { get; set; }
 
-    public string ToJson()
+    Operation op;
+
+    BinaryParams(Operation _op)
     {
-        Result result = new Result(X + Y);
-        string json  = System.Text.Json.JsonSerializer.Serialize<Result>(result);
-        return json;
+        op = _op;
     }
 
-    public static bool TryParse(string? value, IFormatProvider? provider, out AddParams addParam)
+    public string ToJson()
+    {
+        // Result result = new Result(X + Y);
+        Op result = op.Eval(X,Y);
+        // return result.ToJson();
+        return System.Text.Json.JsonSerializer.Serialize<Op>(result);
+    }
+
+    public static bool TryParse(string? value, IFormatProvider? provider, out BinaryParams binaryParams)
     {
         // Format is "(12.3,10.1)"
         var trimmedValue = value?.TrimStart('(').TrimEnd(')');
@@ -29,11 +30,11 @@ public class AddParams
          && double.TryParse(segments[0], out var x)
          && double.TryParse(segments[1], out var y))
         {
-            addParam = new AddParams { X = x, Y = y };
+            binaryParams = new BinaryParams { X = x, Y = y };
             return true;
         }
 
-        addParam = new AddParams();
+        binaryParams = new BinaryParams();
         return false;
     }
 }

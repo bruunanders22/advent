@@ -30,6 +30,7 @@ app.MapGet("/Environment", () =>
 // app.MapGet("/add/{first:int}/{second:int}", () => first + second);
 
 app.MapGet("/add", (AddParams addparams) => addparams.ToJson());
+app.MapGet("/concat", (ConcatParams concatparams) => concatparams.ToJson());
 
 // app.MapGet("/hello/{name:alpha}", (string name) => $"Hello {name}!");
 // app.MapGet("/add/{params}", (AddParams params) => $"Sum: {params}");
