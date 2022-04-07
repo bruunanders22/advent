@@ -26,7 +26,6 @@ namespace WebAPIClient
         }
     }
 
-
     class Test
     {
 
@@ -41,7 +40,6 @@ namespace WebAPIClient
             var result = await WebserviceTools.CallAddWebservice(10.0, 20.0);
             Assert.AreEqual(30.0, result.sum);
         }
-
 
     }
 
